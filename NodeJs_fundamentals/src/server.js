@@ -1,25 +1,30 @@
 import http from 'http';
+import  json from './middleware/json.js';
 
-const users = [];
+const users = []
 
-const server = http.createServer((req, res) => {
-	const { method, url } = req;
+const server = http.createServer(async (req, res) => {
+	
+const { method, url } = req
+  
+	await json(req, res)
+
 	if (method === 'GET' && url === '/users') {
 		return res
-			.setHeader('Content-type', 'application/json')
-			.end(JSON.stringify(users));
+			.end(JSON.stringify(users))
 	}
 
 	if (method === 'POST' && url === '/users') {
-		const user = users.push({
+		const { name, email } = req.body
+
+		users.push({
 			id: 1,
-			nome: 'ernesto',
-			idade: 12,
-			email: 'ernestomaria93@gmail.com',
-		});
-		return res.end('Criacão de usuarios');
+			name,
+			email,
+		})
+
+		return res.writeHead(201).end()
 	}
-	return res.end('On fire 2');
-});
+})
 
 server.listen(3333);
